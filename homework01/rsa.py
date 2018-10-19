@@ -3,8 +3,6 @@ import random
 
 def is_prime(n):
     """
-    Tests to see if a number is prime.
-
     >>> is_prime(2)
     True
     >>> is_prime(11)
@@ -12,34 +10,67 @@ def is_prime(n):
     >>> is_prime(8)
     False
     """
-    # PUT YOUR CODE HERE
+    div = 1
+    for i in range(2, n):
+        if n % i == 0:
+            div = i
+    if div == 1:
+        return True
+    else:
+        return False
+    # Проверка, простое ли число
     pass
-
 
 def gcd(a, b):
-    """
-    Euclid's algorithm for determining the greatest common divisor.
 
-    >>> gcd(12, 15)
-    3
-    >>> gcd(3, 7)
-    1
-    """
-    # PUT YOUR CODE HERE
+    while a != 0 and b != 0:
+        if a > b:
+            a %= b
+        else:
+            b %= a
+    gcd = a + b
+    return gcd
+    # наибольший общий делитель
     pass
 
+def multiplicative_inverse(e: int, phi: int)-> int:
 
-def multiplicative_inverse(e, phi):
     """
     Euclid's extended algorithm for finding the multiplicative
     inverse of two numbers.
-
     >>> multiplicative_inverse(7, 40)
     23
     """
-    # PUT YOUR CODE HERE
-    pass
+    a = []
+    b = []
+    x = []
+    y = []
+    result_lst = []
 
+
+    #Значение из b переносится в следующую строку a. из a mod b перенос в следующую строку b.
+    while e % phi != 0:
+        a.append(phi)
+        b.append(e)
+        result_lst.append(phi//e)
+        mod = phi % e
+        phi = e
+        e = mod
+
+    result_lst.append(0)
+    x.append(0)
+    y.append(1)
+
+    j = len(result_lst) - 1
+    i = 0
+    while i < len(result_lst):
+        x.append(y[i])
+        y.append(x[i] - y[i] * result_lst[j])
+        i += 1
+        j -= 1
+
+    d = y[i] % a[0]
+    return d
 
 def generate_keypair(p, q):
     if not (is_prime(p) and is_prime(q)):
@@ -48,10 +79,10 @@ def generate_keypair(p, q):
         raise ValueError('p and q cannot be equal')
 
     # n = pq
-    # PUT YOUR CODE HERE
+    n = p * q
 
-    # phi = (p-1)(q-1)
-    # PUT YOUR CODE HERE
+    #phi = (p-1)(q-1)
+    phi = (p - 1) * (q - 1)
 
     # Choose an integer e such that e and phi(n) are coprime
     e = random.randrange(1, phi)
@@ -69,7 +100,6 @@ def generate_keypair(p, q):
     # Public key is (e, n) and private key is (d, n)
     return ((e, n), (d, n))
 
-
 def encrypt(pk, plaintext):
     # Unpack the key into it's components
     key, n = pk
@@ -79,7 +109,6 @@ def encrypt(pk, plaintext):
     # Return the array of bytes
     return cipher
 
-
 def decrypt(pk, ciphertext):
     # Unpack the key into its components
     key, n = pk
@@ -87,7 +116,6 @@ def decrypt(pk, ciphertext):
     plain = [chr((char ** key) % n) for char in ciphertext]
     # Return the array of bytes as a string
     return ''.join(plain)
-
 
 if __name__ == '__main__':
     print("RSA Encrypter/ Decrypter")

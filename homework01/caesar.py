@@ -23,21 +23,29 @@ def encrypt_caesar(plaintext: str)->str:
     return ciphertext
 
 
-def decrypt_caesar(ciphertext):
-    """
-    Decrypts a ciphertext using a Caesar cipher.
+def decrypt_caesar(plaintext: str)->str:
 
-    >>> decrypt_caesar("SBWKRQ")
-    'PYTHON'
-    >>> decrypt_caesar("sbwkrq")
-    'python'
-    >>> decrypt_caesar("Sbwkrq3.6")
-    'Python3.6'
-    >>> decrypt_caesar("")
-    ''
     """
-    # PUT YOUR CODE  HERE
-    return plaintext
+        >>> decrypt_caesar("SBWKRQ")
+        'PYTHON'
+        >>> decrypt_caesar("sbwkrq")
+        'python'
+        >>> decrypt_caesar("Sbwkrq3.6")
+        'Python3.6'
+        >>> decrypt_caesar("")
+        ''
+        """
+    ciphertext = ""
+
+    code_dict = {'a': 'x', 'A': 'X', 'b': 'y', 'B': 'Y', 'c': 'z', 'C': 'Z'}
+
+    for c in plaintext:
+        if c == "a" or c == "A" or c == "b" or c == 'B' or c == "c" or c == "C":
+            ciphertext += code_dict[c]
+        else:
+            ciphertext += change_symbol(c, -3)
+
+    return ciphertext
 
 def change_symbol(ch: str, shift: int)->bool:
 

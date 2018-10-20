@@ -1,5 +1,4 @@
-def encrypt_caesar(plaintext: str)->str:
-
+def encrypt_caesar(plaintext: str) -> str:
     """
     >>> encrypt_caesar("PYTHON")
     'SBWKRQ'
@@ -23,8 +22,7 @@ def encrypt_caesar(plaintext: str)->str:
     return ciphertext
 
 
-def decrypt_caesar(plaintext: str)->str:
-
+def decrypt_caesar(plaintext: str) -> str:
     """
         >>> decrypt_caesar("SBWKRQ")
         'PYTHON'
@@ -47,11 +45,11 @@ def decrypt_caesar(plaintext: str)->str:
 
     return ciphertext
 
-def change_symbol(ch: str, shift: int)->bool:
 
+def change_symbol(ch: str, shift: int) -> bool:
     icode = ord(ch)
     if (icode >= ord('a') and icode <= ord('z')) or \
-        (icode >= ord('A') and icode <= ord('Z')):
-        return(chr(icode + shift))
+            (icode >= ord('A') and icode <= ord('Z')):
+        return (chr(icode + shift))
     else:
         return ch

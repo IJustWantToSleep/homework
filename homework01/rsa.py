@@ -1,7 +1,7 @@
 import random
 
 
-def is_prime(n: int)-> int:
+def is_prime(n: int) -> int:
     """
     >>> is_prime(2)
     True
@@ -21,8 +21,8 @@ def is_prime(n: int)-> int:
     # Проверка, простое ли число
     pass
 
-def gcd(a: int, b: int)-> int:
 
+def gcd(a: int, b: int) -> int:
     while a != 0 and b != 0:
         if a > b:
             a %= b
@@ -33,8 +33,8 @@ def gcd(a: int, b: int)-> int:
     # наибольший общий делитель
     pass
 
-def multiplicative_inverse(e: int, phi: int)-> int:
 
+def multiplicative_inverse(e: int, phi: int) -> int:
     """
     Euclid's extended algorithm for finding the multiplicative
     inverse of two numbers.
@@ -47,12 +47,11 @@ def multiplicative_inverse(e: int, phi: int)-> int:
     y = []
     result_lst = []
 
-
-    #Значение из b переносится в следующую строку a. из a mod b перенос в следующую строку b.
+    # Значение из b переносится в следующую строку a. из a mod b перенос в следующую строку b.
     while e % phi != 0:
         a.append(phi)
         b.append(e)
-        result_lst.append(phi//e)
+        result_lst.append(phi // e)
         mod = phi % e
         phi = e
         e = mod
@@ -72,7 +71,8 @@ def multiplicative_inverse(e: int, phi: int)-> int:
     d = y[i] % a[0]
     return d
 
-def generate_keypair(p: int, q: int)-> int:
+
+def generate_keypair(p: int, q: int) -> int:
     if not (is_prime(p) and is_prime(q)):
         raise ValueError('Both numbers must be prime.')
     elif p == q:
@@ -81,7 +81,7 @@ def generate_keypair(p: int, q: int)-> int:
     # n = pq
     n = p * q
 
-    #phi = (p-1)(q-1)
+    # phi = (p-1)(q-1)
     phi = (p - 1) * (q - 1)
 
     # Choose an integer e such that e and phi(n) are coprime
@@ -98,9 +98,10 @@ def generate_keypair(p: int, q: int)-> int:
 
     # Return public and private keypair
     # Public key is (e, n) and private key is (d, n)
-    return ((e, n), (d, n))
+    return (e, n), (d, n)
 
-def encrypt(pk:tuple, plaintext:str)-> int:
+
+def encrypt(pk: tuple, plaintext: str) -> int:
     # Unpack the key into it's components
     key, n = pk
     # Convert each letter in the plaintext to numbers based on
@@ -109,13 +110,15 @@ def encrypt(pk:tuple, plaintext:str)-> int:
     # Return the array of bytes
     return cipher
 
-def decrypt(pk:tuple, ciphertext:list)-> int:
+
+def decrypt(pk: tuple, ciphertext: list) -> int:
     # Unpack the key into its components
     key, n = pk
     # Generate the plaintext based on the ciphertext and key using a^b mod m
     plain = [chr((char ** key) % n) for char in ciphertext]
     # Return the array of bytes as a string
     return ''.join(plain)
+
 
 if __name__ == '__main__':
     print("RSA Encrypter/ Decrypter")

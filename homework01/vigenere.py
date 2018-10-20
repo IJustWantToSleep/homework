@@ -1,4 +1,4 @@
-def encrypt_vigenere(plaintext: str, keyword: str)->str:
+def encrypt_vigenere(plaintext: str, keyword: str) -> str:
     """
     >>> encrypt_vigenere("PYTHON", "A")
     'PYTHON'
@@ -11,7 +11,8 @@ def encrypt_vigenere(plaintext: str, keyword: str)->str:
 
     return ciphertext
 
-def decrypt_vigenere(ciphertext: str, keyword: str)-> str:
+
+def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
     """
     >>> decrypt_vigenere("PYTHON", "A")
     'PYTHON'
@@ -23,6 +24,7 @@ def decrypt_vigenere(ciphertext: str, keyword: str)-> str:
     plaintext = code_vigenere(ciphertext, keyword, -1)
     # PUT YOUR CODE HERE
     return plaintext
+
 
 def code_vigenere(plaintext: str, keyword: str, is_cipher: int) -> str:
     """
@@ -44,20 +46,22 @@ def code_vigenere(plaintext: str, keyword: str, is_cipher: int) -> str:
 
     return ciphertext
 
-def find_pos(input_ch: str)->int:
+
+def find_pos(input_ch: str) -> int:
     """
     Найти позицию символа в алфавите
     :param input_ch: символ
     :return: позиция символа
     """
-    lst = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",\
+    lst = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", \
            "w", "x", "y", "z"]
     for idx, ch in enumerate(lst):
         if ch.lower() == input_ch.lower():
             return idx
     return -1
 
-def find_shift(key_ch: str, ch: str, is_cipher: int)->int:
+
+def find_shift(key_ch: str, ch: str, is_cipher: int) -> int:
     """
     Найти сдвиг в зависимости от позиции входного символа и символа ключа
     :param key_ch: символ ключа
@@ -72,10 +76,10 @@ def find_shift(key_ch: str, ch: str, is_cipher: int)->int:
         return 0
     # по формуле: (позиция вх.символа+ позиция символа ключа) mod 26 - шифроаание
     # (m-k)%26 - дешифрование
-    return((m + k*is_cipher)%26)
+    return ((m + k * is_cipher) % 26)
 
 
-def change_symbol(ch: str, shift: int)->str:
+def change_symbol(ch: str, shift: int) -> str:
     """
     Найти сдвиг в зависимости от позиции входного символа и символа ключа
     :param ch: символ строки, которую шифруем
@@ -86,7 +90,7 @@ def change_symbol(ch: str, shift: int)->str:
     i_code = ord(ch)
     i_first = 0;
     if (i_code >= ord('a') and i_code <= ord('z')) or \
-        (i_code >= ord('A') and i_code <= ord('Z')):
+            (i_code >= ord('A') and i_code <= ord('Z')):
         # проверка на верхний регистр
         if ch.isupper():
             i_first = ord("A")

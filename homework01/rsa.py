@@ -1,7 +1,7 @@
 import random
 
 
-def is_prime(n):
+def is_prime(n: int)-> int:
     """
     >>> is_prime(2)
     True
@@ -21,7 +21,7 @@ def is_prime(n):
     # Проверка, простое ли число
     pass
 
-def gcd(a, b):
+def gcd(a: int, b: int)-> int:
 
     while a != 0 and b != 0:
         if a > b:
@@ -72,7 +72,7 @@ def multiplicative_inverse(e: int, phi: int)-> int:
     d = y[i] % a[0]
     return d
 
-def generate_keypair(p, q):
+def generate_keypair(p: int, q: int)-> int:
     if not (is_prime(p) and is_prime(q)):
         raise ValueError('Both numbers must be prime.')
     elif p == q:
@@ -100,7 +100,7 @@ def generate_keypair(p, q):
     # Public key is (e, n) and private key is (d, n)
     return ((e, n), (d, n))
 
-def encrypt(pk, plaintext):
+def encrypt(pk:tuple, plaintext:str)-> int:
     # Unpack the key into it's components
     key, n = pk
     # Convert each letter in the plaintext to numbers based on
@@ -109,7 +109,7 @@ def encrypt(pk, plaintext):
     # Return the array of bytes
     return cipher
 
-def decrypt(pk, ciphertext):
+def decrypt(pk:tuple, ciphertext:list)-> int:
     # Unpack the key into its components
     key, n = pk
     # Generate the plaintext based on the ciphertext and key using a^b mod m

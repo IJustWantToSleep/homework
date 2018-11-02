@@ -29,7 +29,7 @@ def group(values: list, n: int) -> list:
     """
     L = [values[i:i + n] for i in range(0, len(values), n)]
     return L
-    pass
+
 
 
 def get_row(values: list, pos: tuple) -> list:
@@ -43,7 +43,7 @@ def get_row(values: list, pos: tuple) -> list:
     ['.', '8', '9']
     """
     return values[pos[0]]
-    pass
+
 
 
 def get_col(values: list, pos: tuple) -> list:
@@ -57,7 +57,7 @@ def get_col(values: list, pos: tuple) -> list:
     ['3', '6', '9']
     """
     return [values[i][pos[1]] for i in range(len(values))]
-    pass
+
 
 
 def get_block(values: list, pos: tuple) -> list:
@@ -78,8 +78,8 @@ def get_block(values: list, pos: tuple) -> list:
         for j in range(3):
             block.append(values[row + i][col + j])
     return block
-    #
-    pass
+
+
 
 
 def find_empty_positions(grid: list) -> tuple:
@@ -97,7 +97,7 @@ def find_empty_positions(grid: list) -> tuple:
             if grid[row][col] == '.':
                 return (row, col)
     return None
-    pass
+
 
 
 def find_possible_values(grid: list, pos: tuple) -> set:
@@ -113,7 +113,7 @@ def find_possible_values(grid: list, pos: tuple) -> set:
     """
     return set('123456789') - set(get_row(grid, pos)) - set(get_col(grid, pos)) - set(get_block(grid, pos))
 
-    pass
+
 
 
 def solve(grid: list) -> list:
@@ -141,7 +141,7 @@ def solve(grid: list) -> list:
     grid[row][col] = '.'
     return None
 
-    pass
+
 
 
 def check_solution(solution: list) -> bool:
@@ -168,7 +168,7 @@ def check_solution(solution: list) -> bool:
             return False
 
     return True
-pass
+
 
 
 def generate_sudoku(N: int) -> list:

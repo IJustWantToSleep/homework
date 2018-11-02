@@ -142,7 +142,7 @@ def solve(grid: list) -> list:
     pass
 
 
-def check_solution(solution):
+def check_solution(solution: list) -> bool:
     """ Если решение solution верно, то вернуть True, в противном случае False """
     #проверка решения. перебор по спискам
     # TODO: Add doctests with bad puzzles

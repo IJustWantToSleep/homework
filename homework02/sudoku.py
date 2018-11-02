@@ -16,7 +16,7 @@ def display(values):
     print()
 
 
-def group(values: list, n: int)-> list:
+def group(values: list, n: int) -> list:
     """
     Сгруппировать значения values в список, состоящий из списков по n элементов
 
@@ -30,7 +30,7 @@ def group(values: list, n: int)-> list:
     pass
 
 
-def get_row(values, pos):
+def get_row(values: list, pos: tuple) -> list:
     """ Возвращает все значения для номера строки, указанной в pos
 
     >>> get_row([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
@@ -44,7 +44,7 @@ def get_row(values, pos):
     pass
 
 
-def get_col(values, pos):
+def get_col(values: list, pos: tuple) -> list:
     """ Возвращает все значения для номера столбца, указанного в pos
 
     >>> get_col([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
@@ -58,7 +58,7 @@ def get_col(values, pos):
     pass
 
 
-def get_block(values, pos):
+def get_block(values: list, pos: tuple) -> list:
     """ Возвращает все значения из квадрата, в который попадает позиция pos
 
     >>> grid = read_sudoku('puzzle1.txt')
@@ -80,7 +80,7 @@ def get_block(values, pos):
     pass
 
 
-def find_empty_positions(grid):
+def find_empty_positions(grid: list) -> tuple:
     """ Найти первую свободную позицию в пазле
 
     >>> find_empty_positions([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']])
@@ -98,7 +98,7 @@ def find_empty_positions(grid):
     pass
 
 
-def find_possible_values(grid, pos):
+def find_possible_values(grid: list, pos: tuple) -> set:
     """ Вернуть множество возможных значения для указанной позиции
 
     >>> grid = read_sudoku('puzzle1.txt')
@@ -114,7 +114,7 @@ def find_possible_values(grid, pos):
     pass
 
 
-def solve(grid):
+def solve(grid: list) -> list:
     """ Решение пазла, заданного в grid """
     """ Как решать Судоку?
         1. Найти свободную позицию
@@ -144,12 +144,32 @@ def solve(grid):
 
 def check_solution(solution):
     """ Если решение solution верно, то вернуть True, в противном случае False """
+    #проверка решения. перебор по спискам
     # TODO: Add doctests with bad puzzles
 
-    pass
+    all_set = ('1', '2', '3', '4', '5', '6', '7', '8', '9')
+
+    for row in range(9):
+        row_values = set(get_row(solution, (row, 0)))
+        if sorted(row_values) != sorted(all_set):
+            return False
+
+    for col in range(9):
+        col_values = set(get_col(solution, (0, col)))
+        if sorted(col_values) != sorted(all_set):
+            return False
+
+    for row in (0, 3, 6):
+        for col in (0, 3, 6):
+           block_values = set(get_block(solution, (row, col)))
+        if sorted(block_values) != sorted(all_set):
+            return False
+
+    return True
+pass
 
 
-def generate_sudoku(N):
+def generate_sudoku(N: int) -> list:
     """ Генерация судоку заполненного на N элементов
 
     >>> grid = generate_sudoku(40)
@@ -180,4 +200,5 @@ if __name__ == '__main__':
         display(grid)
         solution = solve(grid)
         display(solution)
+        check_solution(solution)
 

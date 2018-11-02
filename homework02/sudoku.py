@@ -173,6 +173,7 @@ def check_solution(solution: list) -> bool:
 
 def generate_sudoku(N: int) -> list:
     """ Генерация судоку заполненного на N элементов
+    Генерация - заполнение поля 9 на 9 числами и точками, исп. рандом.
 
     >>> grid = generate_sudoku(40)
     >>> sum(1 for row in grid for e in row if e == '.')

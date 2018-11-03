@@ -1,14 +1,15 @@
 import random
+from typing import List
 
 
-def read_sudoku(filename):
+def read_sudoku(filename: str) -> list:
     """ Прочитать Судоку из указанного файла """
     digits = [c for c in open(filename).read() if c in '123456789.']
     grid = group(digits, 9)
     return grid
 
 
-def display(values):
+def display(values: list) -> None:
     """Вывод Судоку """
     width = 2
     line = '+'.join(['-' * (width * 3)] * 3)
@@ -34,7 +35,7 @@ def group(values: list, n: int) -> list:
     return L
 
 
-def get_row(values: list, pos: tuple) -> list:
+def get_row(values: List[list], pos: tuple) -> list:
     """ Возвращает все значения для номера строки, указанной в pos
 
     >>> get_row([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
@@ -95,7 +96,7 @@ def find_empty_positions(grid: list) -> tuple:
         for col in range(len(grid[row])):
             if grid[row][col] == '.':
                 return (row, col)
-    return None
+    return (-1, -1)
 
 
 def find_possible_values(grid: list, pos: tuple) -> set:
@@ -146,7 +147,7 @@ def solve(grid: list) -> list:
         if solution:
             return solution
     grid[row][col] = '.'
-    return None
+    return []
 
 
 def check_solution(solution: list) -> bool:

@@ -82,9 +82,11 @@ class GameOfLife:
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            # PUT YOUR CODE HERE
+
             self.draw_cell_list(clist)
 
+            # обновить клетки
+            clist = self.update_cell_list(clist)
             # рисуется сетка
             self.draw_grid()
             # обновить полный экран
@@ -124,7 +126,7 @@ class GameOfLife:
             clist.append(lst_width)
         return clist
 
-    def get_neighbours(self, cell):
+    def get_neighbours(self, cell: tuple)->list:
         """ Вернуть список соседей для указанной ячейки
 
         :param cell: Позиция ячейки в сетке, задается кортежем вида (row, col)
@@ -136,30 +138,90 @@ class GameOfLife:
         col = cell[1]
         # получить ячейку слева
         if row > 0:
-            neighbours.append(row - 1, col)
+            neighbours.append((row - 1, col))
         # получить ячейку справа
-        if row < self.cell_width:
-            neighbours.append(row + 1, col)
+        if row < self.cell_width - 1:
+            neighbours.append((row + 1, col))
         # получить ячейку сверху
         if col > 0:
-            neighbours.append(row, col - 1)
+            neighbours.append((row, col - 1))
         # получить ячейку снизу
-        if col < self.cell_height:
-            neighbours.append(row, col + 1)
+        if col < self.cell_height - 1:
+            neighbours.append((row + 1, col))
         # получить ячейку слева снизу по диагонали
-        if row > 0 and col < self.cell_height:
-            neighbours.append(row + 1, col - 1)
+        if row > 0 and col < self.cell_height - 1:
+            neighbours.append((row + 1, col - 1))
         # получить ячейку справа снизу по диагонали
-        if row > self.cell_width and col < self.cell_height:
-            neighbours.append(row + 1, col + 1)
+        if row < self.cell_width - 1 and col < self.cell_height - 1:
+            neighbours.append((row + 1, col + 1))
         # получить ячейку слева сверху по диагонали
-        if row > 0 and col < 0:
-            neighbours.append(row - 1, col - 1)
+        if row > 0 and col > 0:
+            neighbours.append((row - 1, col - 1))
         # получить ячейку справа сверху по диагонали
-        if row > 0 and col < self.cell_height:
-            neighbours.append(row - 1, col + 1)
+        if row > 0 and col < self.cell_height - 1:
+            neighbours.append((row - 1, col + 1))
 
         return neighbours
+
+
+    def is_life_cell(self, cell: tuple, grid: list)-> bool:
+        """функция обращается к элементам списка, определяет, живая клетка, или нет
+        """
+
+        if self.cell_height <= cell[1]:
+            print (cell)
+        if self.cell_width <= cell[0]:
+            print(cell)
+        try:
+            if grid[cell[1]][cell[0]] == 1:
+                return True
+            else:
+                return False
+        except:
+            print(cell)
+
+    def alive_neighbours(self, cell_list:list, grid:list)-> list:
+        """функция возвращает список живых соседей
+        :param cell_list: список всех соседей
+        :param grid: матрица
+        """
+        alive_lst = []
+        for idx, val in enumerate(cell_list):
+            if self.is_life_cell(val, grid):
+                alive_lst.append(val)
+
+        return alive_lst
+
+    def update_cell_list(self, cell_list):
+        """ Выполнить один шаг игры.
+
+        Обновление всех ячеек происходит одновременно. Функция возвращает
+        новое игровое поле.
+
+        :param cell_list: Игровое поле, представленное в виде матрицы
+        :return: Обновленное игровое поле
+        """
+
+        new_clist = cell_list
+
+        for row in range(self.cell_height):
+            for col in range(self.cell_width ):
+                if col == self.cell_width:
+                    print(col)
+                cell = (row, col)
+                # получить список соседей
+                lst_n = self.get_neighbours(cell)
+                # получить список живых соседей
+                lst_alive = self.alive_neighbours(lst_n, cell_list)
+                if len(lst_alive) > 1:
+                    if len(lst_alive) > 2:
+                        if self.is_life_cell(cell, cell_list):
+                            new_clist[col][row] = 0
+                    else:
+                        if not self.is_life_cell(cell, cell_list):
+                            new_clist[col][row] = 1
+
+        return new_clist
 
 class Cell:
 

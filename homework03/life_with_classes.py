@@ -124,6 +124,43 @@ class GameOfLife:
             clist.append(lst_width)
         return clist
 
+    def get_neighbours(self, cell):
+        """ Вернуть список соседей для указанной ячейки
+
+        :param cell: Позиция ячейки в сетке, задается кортежем вида (row, col)
+        :return: Одномерный список ячеек, смежных к ячейке cell
+        """
+        # создание списка соседей
+        neighbours = []
+        row = cell[0]
+        col = cell[1]
+        # получить ячейку слева
+        if row > 0:
+            neighbours.append(row - 1, col)
+        # получить ячейку справа
+        if row < self.cell_width:
+            neighbours.append(row + 1, col)
+        # получить ячейку сверху
+        if col > 0:
+            neighbours.append(row, col - 1)
+        # получить ячейку снизу
+        if col < self.cell_height:
+            neighbours.append(row, col + 1)
+        # получить ячейку слева снизу по диагонали
+        if row > 0 and col < self.cell_height:
+            neighbours.append(row + 1, col - 1)
+        # получить ячейку справа снизу по диагонали
+        if row > self.cell_width and col < self.cell_height:
+            neighbours.append(row + 1, col + 1)
+        # получить ячейку слева сверху по диагонали
+        if row > 0 and col < 0:
+            neighbours.append(row - 1, col - 1)
+        # получить ячейку справа сверху по диагонали
+        if row > 0 and col < self.cell_height:
+            neighbours.append(row - 1, col + 1)
+
+        return neighbours
+
 class Cell:
 
     def __init__(self, row, col, state=False):
@@ -136,6 +173,7 @@ class Cell:
 class CellList:
 
     def __init__(self, nrows, ncols, randomize=False):
+
         pass
 
     def get_neighbours(self, cell):

@@ -80,13 +80,13 @@ class GameOfLife:
                 if event.type == QUIT:
                     running = False
 
+            # обновить клетки
+            clist = self.update_cell_list(clist).copy()
+
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-
             self.draw_cell_list(clist)
 
-            # обновить клетки
-            clist = self.update_cell_list(clist)
             # рисуется сетка
             self.draw_grid()
             # обновить полный экран
@@ -140,25 +140,25 @@ class GameOfLife:
         if row > 0:
             neighbours.append((row - 1, col))
         # получить ячейку справа
-        if row < self.cell_width - 1:
+        if row < (self.cell_height - 1):
             neighbours.append((row + 1, col))
         # получить ячейку сверху
         if col > 0:
             neighbours.append((row, col - 1))
         # получить ячейку снизу
-        if col < self.cell_height - 1:
+        if col < (self.cell_width - 1) and row < (self.cell_height - 1):
             neighbours.append((row + 1, col))
         # получить ячейку слева снизу по диагонали
-        if row > 0 and col < self.cell_height - 1:
-            neighbours.append((row + 1, col - 1))
+        if row > 0 and col < (self.cell_width - 1):
+            neighbours.append((row - 1, col - 1))
         # получить ячейку справа снизу по диагонали
-        if row < self.cell_width - 1 and col < self.cell_height - 1:
+        if row < (self.cell_height - 1) and col < (self.cell_width - 1):
             neighbours.append((row + 1, col + 1))
         # получить ячейку слева сверху по диагонали
         if row > 0 and col > 0:
             neighbours.append((row - 1, col - 1))
         # получить ячейку справа сверху по диагонали
-        if row > 0 and col < self.cell_height - 1:
+        if row > 0 and col < (self.cell_width - 1):
             neighbours.append((row - 1, col + 1))
 
         return neighbours
@@ -167,20 +167,12 @@ class GameOfLife:
     def is_life_cell(self, cell: tuple, grid: list)-> bool:
         """функция обращается к элементам списка, определяет, живая клетка, или нет
         """
+        if grid[cell[0]][cell[1]] == 1:
+            return True
+        else:
+            return False
 
-        if self.cell_height <= cell[1]:
-            print (cell)
-        if self.cell_width <= cell[0]:
-            print(cell)
-        try:
-            if grid[cell[1]][cell[0]] == 1:
-                return True
-            else:
-                return False
-        except:
-            print(cell)
-
-    def alive_neighbours(self, cell_list:list, grid:list)-> list:
+    def alive_neighbours(self, cell_list: list, grid: list)-> list:
         """функция возвращает список живых соседей
         :param cell_list: список всех соседей
         :param grid: матрица
@@ -202,10 +194,10 @@ class GameOfLife:
         :return: Обновленное игровое поле
         """
 
-        new_clist = cell_list
+        new_clist = cell_list.copy()
 
         for row in range(self.cell_height):
-            for col in range(self.cell_width ):
+            for col in range(self.cell_width):
                 if col == self.cell_width:
                     print(col)
                 cell = (row, col)
@@ -213,13 +205,12 @@ class GameOfLife:
                 lst_n = self.get_neighbours(cell)
                 # получить список живых соседей
                 lst_alive = self.alive_neighbours(lst_n, cell_list)
-                if len(lst_alive) > 1:
-                    if len(lst_alive) > 2:
-                        if self.is_life_cell(cell, cell_list):
-                            new_clist[col][row] = 0
-                    else:
-                        if not self.is_life_cell(cell, cell_list):
-                            new_clist[col][row] = 1
+                # если соседей 2 или 3, то рождается новое существо
+                if len(lst_alive) == 2 or (len(lst_alive) == 1):
+                    if not self.is_life_cell(cell, cell_list):
+                        new_clist[row][col] = 1
+                else:
+                    new_clist[row][col] = 0
 
         return new_clist
 
@@ -264,7 +255,7 @@ class CellList:
 
 
 if __name__ == '__main__':
-    game = GameOfLife(320, 240, 20)
+    game = GameOfLife(320, 240, 20, 3)
 
     game.run()
 

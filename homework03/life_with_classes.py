@@ -1,12 +1,13 @@
-import pygame
-from pygame.locals import *
 import random
 from copy import deepcopy
+
+import pygame
+from pygame.locals import *
 
 
 class GameOfLife:
 
-    def __init__(self, width=640, height=480, cell_size=10, speed=10):
+    def __init__(self, width=640, height=480, cell_size=10, speed=10) -> None:
         self.width = width
         self.height = height
         self.cell_size = cell_size
@@ -23,45 +24,18 @@ class GameOfLife:
         # Скорость протекания игры
         self.speed = speed
 
-    def draw_grid(self):
+    def draw_grid(self) -> None:
         """ Отрисовать сетку """
         for x in range(0, self.width, self.cell_size):
             # рисуются линии по оси ox
             pygame.draw.line(self.screen, pygame.Color('black'),
-                    (x, 0), (x, self.height))
+                             (x, 0), (x, self.height))
         for y in range(0, self.height, self.cell_size):
             # рисуются линии по оси oy
             pygame.draw.line(self.screen, pygame.Color('black'),
-                    (0, y), (self.width, y))
+                             (0, y), (self.width, y))
 
-    def draw_cell_list(self, rects: list):
-        """
-        Отображение списка клеток 'rects' с закрашиванием их в
-        соответствующе цвета
-        """
-        x = 0
-        y = 0
-        for row in range(self.cell_height):
-            x = 0
-            # перебор элеметов внутреннего списка
-            for col in range(self.cell_width):
-                # создание ячейки rect для внутреннего списка
-                rect1 = pygame.Rect((x, y, self.cell_size, self.cell_size))
-                # раскрасить ячейку нужным цветом
-                if rects[row][col]:
-                    pygame.draw.rect(self.screen, pygame.Color('green'), rect1)
-                else:
-                    pygame.draw.rect(self.screen, pygame.Color('white'), rect1)
-
-                # увеличение значения по оси x
-                x += self.cell_size
-
-
-            # увеличение значения по оси y
-            y += self.cell_size
-
-
-    def run(self):
+    def run(self) -> None:
         """ Запустить игру """
         pygame.init()
         # создание объекта для контроля времени
@@ -70,8 +44,8 @@ class GameOfLife:
         self.screen.fill(pygame.Color('white'))
 
         # Создание списка клеток
-        # PUT YOUR CODE HERE
-        clist = game.cell_list(randomize=True)
+        clist = CellList(self.cell_height, self.cell_width, randomize=False)
+        clist.from_file('grid.txt')
 
         running = True
         while running:
@@ -81,11 +55,11 @@ class GameOfLife:
                     running = False
 
             # обновить клетки
-            clist = self.update_cell_list(clist).copy()
+            clist.update()
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            self.draw_cell_list(clist)
+            clist.draw_cell_list(self.screen, self.cell_size)
 
             # рисуется сетка
             self.draw_grid()
@@ -97,7 +71,32 @@ class GameOfLife:
         pygame.quit()
 
 
-    def cell_list(self, randomize:bool = False)-> list:
+class Cell:
+    """ класс - клетка
+    """
+
+    def __init__(self, row: int, col: int, state: bool = False) -> None:
+        self.row = row
+        self.col = col
+        self.state = state
+
+    def is_alive(self) -> bool:
+        return self.state
+
+
+class CellList:
+    """ заполнение списка клеток данными из файла
+    """
+
+    def __init__(self, nrows: int, ncols: int, randomize: bool = False) -> None:
+        self.nrows = nrows
+        self.ncols = ncols
+        self.cur_cell = Cell(0, 0)
+        # создадим пустой список клеток
+        self.clist = []
+        self.cell_list(randomize)
+
+    def cell_list(self, randomize: bool = False) -> tuple:
         """
         Создание списка клеток.
 
@@ -107,155 +106,154 @@ class GameOfLife:
         Если параметр randomize = True, то создается список, где
         каждая клетка может быть равновероятно живой или мертвой.
         """
+        i = 0
+        # создадим  список клеток
+        if not randomize:
+            self.clist = [[Cell(i, j, 0) for j in range(self.ncols)]
+                          for i in range(self.nrows)]
+        else:
+            self.clist = [[Cell(i, j, random.randint(0, 1)) for j in range(self.ncols)]
+                          for i in range(self.nrows)]
 
-        #создадим пустой список клеток
-        clist = []
-        #перебор элементов по высоте
-        for row in range(self.cell_height):
-            # создание внутреннего списка и перебор по ширине
-            lst_width = []
-            for col in range(self.cell_width):
-                # получение рандомного значения 0 или 1
-                if randomize:
-                    value = random.randint(0, 1)
-                else:
-                    value = 0
-                lst_width.append(value)
-
-             # добавление элемента внутреннего списка в список
-            clist.append(lst_width)
-        return clist
-
-    def get_neighbours(self, cell: tuple)->list:
-        """ Вернуть список соседей для указанной ячейки
-
-        :param cell: Позиция ячейки в сетке, задается кортежем вида (row, col)
-        :return: Одномерный список ячеек, смежных к ячейке cell
-        """
+    def get_neighbours(self, cell: Cell) -> list:
         # создание списка соседей
         neighbours = []
-        row = cell[0]
-        col = cell[1]
+        row = cell.row
+        col = cell.col
+
         # получить ячейку слева
         if row > 0:
-            neighbours.append((row - 1, col))
+            neighbours.append(Cell(row - 1, col, self.clist[row - 1][col]))
         # получить ячейку справа
-        if row < (self.cell_height - 1):
-            neighbours.append((row + 1, col))
+        if row < (self.nrows - 1):
+            neighbours.append(Cell(row + 1, col, self.clist[row + 1][col]))
         # получить ячейку сверху
         if col > 0:
-            neighbours.append((row, col - 1))
+            neighbours.append(Cell(row, col - 1, self.clist[row][col - 1]))
         # получить ячейку снизу
-        if col < (self.cell_width - 1) and row < (self.cell_height - 1):
-            neighbours.append((row + 1, col))
+        if col < (self.ncols - 1) and row < (self.nrows - 1):
+            neighbours.append(Cell(row + 1, col, self.clist[row + 1][col]))
         # получить ячейку слева снизу по диагонали
-        if row > 0 and col < (self.cell_width - 1):
-            neighbours.append((row - 1, col - 1))
+        if row > 0 and col < (self.ncols - 1):
+            neighbours.append(Cell(row - 1, col - 1, self.clist[row - 1][col - 1]))
         # получить ячейку справа снизу по диагонали
-        if row < (self.cell_height - 1) and col < (self.cell_width - 1):
-            neighbours.append((row + 1, col + 1))
+        if row < (self.nrows - 1) and col < (self.ncols - 1):
+            neighbours.append(Cell(row + 1, col + 1, self.clist[row + 1][col + 1]))
         # получить ячейку слева сверху по диагонали
         if row > 0 and col > 0:
-            neighbours.append((row - 1, col - 1))
+            neighbours.append(Cell(row - 1, col - 1, self.clist[row - 1][col - 1]))
         # получить ячейку справа сверху по диагонали
-        if row > 0 and col < (self.cell_width - 1):
-            neighbours.append((row - 1, col + 1))
+        if row > 0 and col < (self.ncols - 1):
+            neighbours.append(Cell(row - 1, col + 1, self.clist[row - 1][col + 1]))
 
         return neighbours
 
-
-    def is_life_cell(self, cell: tuple, grid: list)-> bool:
-        """функция обращается к элементам списка, определяет, живая клетка, или нет
-        """
-        if grid[cell[0]][cell[1]] == 1:
-            return True
-        else:
-            return False
-
-    def alive_neighbours(self, cell_list: list, grid: list)-> list:
-        """функция возвращает список живых соседей
-        :param cell_list: список всех соседей
-        :param grid: матрица
-        """
-        alive_lst = []
-        for idx, val in enumerate(cell_list):
-            if self.is_life_cell(val, grid):
-                alive_lst.append(val)
-
-        return alive_lst
-
-    def update_cell_list(self, cell_list):
+    def update(self) -> object:
         """ Выполнить один шаг игры.
 
         Обновление всех ячеек происходит одновременно. Функция возвращает
         новое игровое поле.
 
-        :param cell_list: Игровое поле, представленное в виде матрицы
         :return: Обновленное игровое поле
         """
 
-        new_clist = cell_list.copy()
+        new_clist = deepcopy(self.clist)
 
-        for row in range(self.cell_height):
-            for col in range(self.cell_width):
-                if col == self.cell_width:
-                    print(col)
-                cell = (row, col)
+        for row in range(self.nrows):
+            for col in range(self.ncols):
+                cell = Cell(row, col, self.clist[row][col])
                 # получить список соседей
                 lst_n = self.get_neighbours(cell)
                 # получить список живых соседей
-                lst_alive = self.alive_neighbours(lst_n, cell_list)
+                lst_alive = self.alive_neighbours(lst_n)
                 # если соседей 2 или 3, то рождается новое существо
                 if len(lst_alive) == 2 or (len(lst_alive) == 1):
-                    if not self.is_life_cell(cell, cell_list):
+                    if not self.clist[row][col]:
                         new_clist[row][col] = 1
                 else:
                     new_clist[row][col] = 0
 
-        return new_clist
+        self.clist = deepcopy(new_clist)
 
-class Cell:
-
-    def __init__(self, row, col, state=False):
-        pass
-
-    def is_alive(self):
-        pass
-
-
-class CellList:
-
-    def __init__(self, nrows, ncols, randomize=False):
-
-        pass
-
-    def get_neighbours(self, cell):
-        neighbours = []
-        #
-        # PUT YOUR CODE HERE
-        return neighbours
-
-    def update(self):
-        new_clist = deepcopy(self)
-        # PUT YOUR CODE HERE
         return self
 
+    def alive_neighbours(self, cell_list: list) -> list:
+        """функция возвращает список живых соседей
+        :param cell_list: список всех соседей
+        :return : список живых клеток
+        """
+        alive_lst = []
+        for idx, val in enumerate(cell_list):
+
+            if val.state:
+                alive_lst.append(val)
+
+        return alive_lst
+
+    def draw_cell_list(self, screen, cell_size: int) -> None:
+        """
+        Отображение списка клеток 'rects' с закрашиванием их в
+        соответствующе цвета
+        """
+        x = 0
+        y = 0
+        for row in range(self.nrows):
+            x = 0
+            # перебор элеметов внутреннего списка
+            for col in range(self.ncols):
+                # создание ячейки rect для внутреннего списка
+                rect1 = pygame.Rect((x, y, cell_size, cell_size))
+                cell = self.clist[row][col]
+                # раскрасить ячейку нужным цветом
+                if cell:
+                    pygame.draw.rect(screen, pygame.Color('green'), rect1)
+                else:
+                    pygame.draw.rect(screen, pygame.Color('white'), rect1)
+
+                # увеличение значения по оси x
+                x += cell_size
+
+            # увеличение значения по оси y
+            y += cell_size
+
     def __iter__(self):
-        pass
+        self.cur_cell.row = 0
+        self.cur_cell.col = 0
+        return self
 
     def __next__(self):
-        pass
+        if self.cur_cell.col < (self.ncols - 1) and \
+                self.cur_cell.row < (self.nrows - 1):
 
-    def __str__(self):
-        pass
+            self.cur_cell.col += 1
+            self.cur_cell.row += 1
+            self.cur_cell = self.clist[self.cur_cell.row][self.cur_cell.col]
+            return self.cur_cell
+        else:
+            raise StopIteration
+
+    def __str__(self) -> str:
+        str = ''
+        for i in range(self.nrows):
+            for j in range(self.ncols):
+                if self.clist[i][j].state:
+                    str += '1 '
+                else:
+                    str += '0 '
+            str += '\n'
+        return str
 
     @classmethod
-    def from_file(cls, filename):
-        pass
+    def from_file(cls, filename: str):
+        lst = []
+        # with даёт автоматическое открытие и корректное закрытие файла
+        with open(filename) as file:
 
+            for i, line in enumerate(file):
+                lst_width = []
+                for j in line:
+                    if j not in "\n":
+                        lst_width.append(Cell(i, j, int(j)))
+                lst.append(lst_width)
 
-if __name__ == '__main__':
-    game = GameOfLife(320, 240, 20, 3)
-
-    game.run()
-
+        cls.clist = deepcopy(lst)

@@ -134,7 +134,7 @@ class CellList:
         if col < (self.ncols - 1) and row < (self.nrows - 1):
             neighbours.append(Cell(row + 1, col, self.clist[row + 1][col]))
         # получить ячейку слева снизу по диагонали
-        if row > 0 and col < (self.ncols - 1):
+        if row > 0 and col < (self.ncols - 1) and col > 0:
             neighbours.append(Cell(row - 1, col - 1, self.clist[row - 1][col - 1]))
         # получить ячейку справа снизу по диагонали
         if row < (self.nrows - 1) and col < (self.ncols - 1):
@@ -167,7 +167,7 @@ class CellList:
                 # получить список живых соседей
                 lst_alive = self.alive_neighbours(lst_n)
                 # если соседей 2 или 3, то рождается новое существо
-                if len(lst_alive) == 2 or (len(lst_alive) == 1):
+                if len(lst_alive) == 2 or (len(lst_alive) == 3):
                     if not self.clist[row][col]:
                         new_clist[row][col] = 1
                 else:

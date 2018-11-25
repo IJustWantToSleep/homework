@@ -1,7 +1,8 @@
 import random
+from copy import deepcopy
+
 import pygame
 from pygame.locals import *
-from copy import deepcopy
 
 
 class GameOfLife:
@@ -40,7 +41,7 @@ class GameOfLife:
         self.screen.fill(pygame.Color('white'))
 
         # Создание списка клеток
-        clist = deepcopy(self.cell_list(randomize=True))
+        self.clist = deepcopy(self.cell_list(randomize=True))
 
         running = True
         while running:
@@ -48,15 +49,17 @@ class GameOfLife:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
-            # обновить клетки
-            clist = deepcopy(self.update_cell_list(clist))
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            self.draw_cell_list(clist)
+            self.draw_cell_list(self.clist)
 
             # рисуется сетка
             self.draw_grid()
+
+            # обновить клетки
+            self.update_cell_list(self.clist)
+
             # обновить полный экран
             pygame.display.flip()
             clock.tick(self.speed)
@@ -85,7 +88,6 @@ class GameOfLife:
 
                 # добавление элемента внутреннего списка в список
             self.clist.append(lst_width)
-
 
         return self.clist
 
@@ -123,29 +125,30 @@ class GameOfLife:
         neighbours = []
         row = cell[0]
         col = cell[1]
-        # получить ячейку слева
+
+        # получить значение слева
         if col > 0:
             neighbours.append(self.clist[row][col - 1])
-        # получить ячейку справа
-        if col < (self.cell_width-1):
-            neighbours.append(self.clist[row][col+1])
-        # получить ячейку сверху
+        # получить значение справа
+        if col < (self.cell_width - 1):
+            neighbours.append(self.clist[row][col + 1])
+        # получить значение сверху
         if row > 0:
-            neighbours.append(self.clist[row-1][col])
-        # получить ячейку снизу
-        if row < (self.cell_height-1):
+            neighbours.append(self.clist[row - 1][col])
+        # получить значение снизу
+        if row < (self.cell_height - 1):
             neighbours.append(self.clist[row + 1][col])
-        # получить ячейку слева снизу по диагонали
-        if row < (self.cell_height-1) and col > 0:
+        # получить ячейку значение снизу по диагонали
+        if row < (self.cell_height - 1) and col > 0:
             neighbours.append(self.clist[row + 1][col - 1])
-        # получить ячейку справа снизу по диагонали
-        if row < (self.cell_height-1) and col < (self.cell_width-1):
+        # получить значение справа снизу по диагонали
+        if row < (self.cell_height - 1) and col < (self.cell_width - 1):
             neighbours.append(self.clist[row + 1][col + 1])
-        # получить ячейку слева сверху по диагонали
+        # получить значение слева сверху по диагонали
         if row > 0 and col > 0:
-            neighbours.append(self.clist[row - 1][col-1])
-        # получить ячейку справа сверху по диагонали
-        if row > 0 and col < (self.cell_width-1):
+            neighbours.append(self.clist[row - 1][col - 1])
+        # получить значение справа сверху по диагонали
+        if row > 0 and col < (self.cell_width - 1):
             neighbours.append(self.clist[row - 1][col + 1])
 
         return neighbours
@@ -157,19 +160,6 @@ class GameOfLife:
             return True
         else:
             return False
-
-    def alive_neighbours(self, cell_list: list) -> list:
-        """функция возвращает список живых соседей
-        :param cell_list: список всех соседей
-
-        """
-        alive_lst = []
-        for idx, val in enumerate(cell_list):
-            if self.is_life_cell(val, self.clist) and val not in alive_lst:
-
-                alive_lst.append(val)
-
-        return alive_lst
 
     def update_cell_list(self, cell_list) -> object:
         """ Выполнить один шаг игры.
@@ -186,18 +176,16 @@ class GameOfLife:
                 cell = (row, col)
                 # получить список соседей
                 lst_n = self.get_neighbours(cell)
-                # получить список живых соседей
-             #   lst_alive = self.alive_neighbours(lst_n, cell_list)
-                # если соседей 2 или 3, то рождается новое существо
+                # если соседей меньше 2 или больше 3, в след. поколении клетка мертва
                 if sum(lst_n) < 2 or (sum(lst_n) > 3):
                     new_clist[row][col] = 0
+                # если   3 соседа, в сл. поколении в клетке живое существо
                 elif sum(lst_n) == 3:
                     new_clist[row][col] = 1
 
+        self.clist = new_clist
 
-
-
-        return new_clist
+        return self.clist
 
 
 if __name__ == '__main__':

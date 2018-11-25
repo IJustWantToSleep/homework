@@ -56,6 +56,7 @@ class TestCellList(unittest.TestCase):
 
     def test_can_create_a_grid_from_file(self):
         clist = CellList.from_file('grid.txt')
+
         states = [cell.is_alive() for cell in clist]
         self.assertEqual(6, clist.nrows)
         self.assertEqual(8, clist.ncols)

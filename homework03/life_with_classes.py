@@ -43,9 +43,10 @@ class GameOfLife:
         pygame.display.set_caption('Game of Life')
         self.screen.fill(pygame.Color('white'))
 
-        # Создание списка клеток
-        clist = CellList(self.cell_height, self.cell_width, randomize=False)
-        clist.from_file('grid.txt')
+        # Создание списка клеток. для получения из файла выставить randomize=False
+        # и разкомментировать строчку с deepcopy
+        clist = CellList(self.cell_height, self.cell_width, randomize=True)
+        # clist = deepcopy(clist.from_file('grid.txt'))
 
         running = True
         while running:
@@ -54,15 +55,16 @@ class GameOfLife:
                 if event.type == QUIT:
                     running = False
 
-            # обновить клетки
-            clist.update()
-
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
             clist.draw_cell_list(self.screen, self.cell_size)
 
+            # обновить клетки
+            clist = deepcopy(clist.update())
+
             # рисуется сетка
             self.draw_grid()
+
             # обновить полный экран
             pygame.display.flip()
             # обновить время (в зависимости от скорости протекания игры)
@@ -121,30 +123,30 @@ class CellList:
         row = cell.row
         col = cell.col
 
-        # получить ячейку слева
-        if row > 0:
-            neighbours.append(Cell(row - 1, col, self.clist[row - 1][col]))
-        # получить ячейку справа
-        if row < (self.nrows - 1):
-            neighbours.append(Cell(row + 1, col, self.clist[row + 1][col]))
-        # получить ячейку сверху
+        # получить значение слева
         if col > 0:
-            neighbours.append(Cell(row, col - 1, self.clist[row][col - 1]))
-        # получить ячейку снизу
-        if col < (self.ncols - 1) and row < (self.nrows - 1):
-            neighbours.append(Cell(row + 1, col, self.clist[row + 1][col]))
-        # получить ячейку слева снизу по диагонали
-        if row > 0 and col < (self.ncols - 1) and col > 0:
-            neighbours.append(Cell(row - 1, col - 1, self.clist[row - 1][col - 1]))
-        # получить ячейку справа снизу по диагонали
+            neighbours.append(self.clist[row][col - 1])
+        # получить значение справа
+        if col < (self.ncols - 1):
+            neighbours.append(self.clist[row][col + 1])
+        # получить значение сверху
+        if row > 0:
+            neighbours.append(self.clist[row - 1][col])
+        # получить значение снизу
+        if row < (self.nrows - 1):
+            neighbours.append(self.clist[row + 1][col])
+        # получить значение слева снизу по диагонали
+        if row < (self.nrows - 1) and col > 0:
+            neighbours.append(self.clist[row + 1][col - 1])
+        # получить значение справа снизу по диагонали
         if row < (self.nrows - 1) and col < (self.ncols - 1):
-            neighbours.append(Cell(row + 1, col + 1, self.clist[row + 1][col + 1]))
-        # получить ячейку слева сверху по диагонали
+            neighbours.append(self.clist[row + 1][col + 1])
+        # получить значение слева сверху по диагонали
         if row > 0 and col > 0:
-            neighbours.append(Cell(row - 1, col - 1, self.clist[row - 1][col - 1]))
-        # получить ячейку справа сверху по диагонали
+            neighbours.append(self.clist[row - 1][col - 1])
+        # получить значение справа сверху по диагонали
         if row > 0 and col < (self.ncols - 1):
-            neighbours.append(Cell(row - 1, col + 1, self.clist[row - 1][col + 1]))
+            neighbours.append(self.clist[row - 1][col + 1])
 
         return neighbours
 
@@ -161,36 +163,26 @@ class CellList:
 
         for row in range(self.nrows):
             for col in range(self.ncols):
-                cell = Cell(row, col, self.clist[row][col])
+                cell = (self.clist[row][col])
                 # получить список соседей
                 lst_n = self.get_neighbours(cell)
-                # получить список живых соседей
-                lst_alive = self.alive_neighbours(lst_n)
-                # если соседей 2 или 3, то рождается новое существо
-                if len(lst_alive) == 2 or (len(lst_alive) == 3):
-                    if not self.clist[row][col]:
-                        new_clist[row][col] = 1
-                else:
-                    new_clist[row][col] = 0
+                # перебор ячеек с накоплением суммы живых ячеек. если ячейка живая, +1
+                res = 0
+                for idx in lst_n:
+                    if idx.is_alive():
+                        res += 1
+                # если соседей меньше 2 или больше 3, в след. поколении клетка мертва
+                if res < 2 or res > 3:
+                    new_clist[row][col].state = 0
+                # если  3 соседа, в след. поколении в клетке живое существо
+                elif res == 3:
+                    new_clist[row][col].state = 1
 
         self.clist = deepcopy(new_clist)
 
         return self
 
-    def alive_neighbours(self, cell_list: list) -> list:
-        """функция возвращает список живых соседей
-        :param cell_list: список всех соседей
-        :return : список живых клеток
-        """
-        alive_lst = []
-        for idx, val in enumerate(cell_list):
-
-            if val.state:
-                alive_lst.append(val)
-
-        return alive_lst
-
-    def draw_cell_list(self, screen, cell_size: int) -> None:
+    def draw_cell_list(self, screen: SWSURFACE, cell_size: int) -> None:
         """
         Отображение списка клеток 'rects' с закрашиванием их в
         соответствующе цвета
@@ -205,7 +197,7 @@ class CellList:
                 rect1 = pygame.Rect((x, y, cell_size, cell_size))
                 cell = self.clist[row][col]
                 # раскрасить ячейку нужным цветом
-                if cell:
+                if cell.is_alive():
                     pygame.draw.rect(screen, pygame.Color('green'), rect1)
                 else:
                     pygame.draw.rect(screen, pygame.Color('white'), rect1)
@@ -217,18 +209,21 @@ class CellList:
             y += cell_size
 
     def __iter__(self):
+        """
+        инициализация итератора
+        """
         self.cur_cell.row = 0
         self.cur_cell.col = 0
         return self
 
     def __next__(self):
-        if self.cur_cell.col < (self.ncols - 1) and \
-                self.cur_cell.row < (self.nrows - 1):
-
+        if self.cur_cell.row < self.nrows:
+            cell = self.clist[self.cur_cell.row][self.cur_cell.col]
             self.cur_cell.col += 1
-            self.cur_cell.row += 1
-            self.cur_cell = self.clist[self.cur_cell.row][self.cur_cell.col]
-            return self.cur_cell
+            if self.cur_cell.col == self.ncols:
+                self.cur_cell.row += 1
+                self.cur_cell.col = 0
+            return cell
         else:
             raise StopIteration
 
@@ -251,9 +246,19 @@ class CellList:
 
             for i, line in enumerate(file):
                 lst_width = []
-                for j in line:
-                    if j not in "\n":
-                        lst_width.append(Cell(i, j, int(j)))
+                j = 0
+                for val in line:
+                    if val not in "\n":
+                        lst_width.append(Cell(i, j, int(val)))
+                    j += 1
                 lst.append(lst_width)
+        # создание экземплляра класса CellList с установкой значений количества строк и столбцов
+        cell_list = CellList(i + 1, j - 1, False)
+        cell_list.clist = lst
 
-        cls.clist = deepcopy(lst)
+        return cell_list
+
+
+if __name__ == '__main__':
+    game = GameOfLife(320, 240, 20)
+    game.run()

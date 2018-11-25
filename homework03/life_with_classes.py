@@ -216,7 +216,7 @@ class CellList:
         self.cur_cell.col = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> Cell:
         if self.cur_cell.row < self.nrows:
             cell = self.clist[self.cur_cell.row][self.cur_cell.col]
             self.cur_cell.col += 1

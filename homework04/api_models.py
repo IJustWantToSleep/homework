@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class BaseUser(BaseModel):
-    """ Модель пользователя с базовыми полями """
+    """ Модель пользователя с  базовыми полями """
     id: int
     first_name: str
     last_name: str

@@ -21,7 +21,7 @@ def fromtimestamp(ts: int) -> datetime.date:
 
 
 def count_dates_from_messages(messages: List[Message]) -> Tuple[Dates, Frequencies]:
-    """ Получить список дат и их частот
+    """ Получить список  дат и их частот
 
     :param messages: список сообщений
     """

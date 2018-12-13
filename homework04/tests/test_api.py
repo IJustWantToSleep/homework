@@ -44,3 +44,8 @@ class TestGetRequest(unittest.TestCase):
             with self.assertRaises(requests.exceptions.ConnectionError):
                 get('http://example.com', max_retries=1)
 
+
+loader = unittest.TestLoader()
+suite = loader.loadTestsFromTestCase(TestGetRequest)
+runner = unittest.TextTestRunner(verbosity=2)
+result = runner.run(suite)

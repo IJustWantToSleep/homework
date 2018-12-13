@@ -45,3 +45,8 @@ class TestAgePredict(unittest.TestCase):
             predicted_age = age_predict(user_id=1)
             self.assertEqual(predicted_age, None)
 
+
+loader = unittest.TestLoader()
+suite = loader.loadTestsFromTestCase(TestAgePredict)
+runner = unittest.TextTestRunner(verbosity=2)
+result = runner.run(suite)

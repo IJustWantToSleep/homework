@@ -6,6 +6,7 @@ from api import get_friends
 from api_models import User
 import time
 import datetime
+from datetime import date
 
 
 def age_predict(user_id: int) -> Optional[float]:
@@ -27,13 +28,22 @@ def age_predict(user_id: int) -> Optional[float]:
         birthday = friend.bdate
         try:
             # time.strptime преобразует строку в datetime
-            bdates = time.strptime(birthday, "%d.%m.%Y")
+            #res = datetime.datetime.strptime(birthday, "%d.%m.%Y")
+            #bdates.append(res)
+            #age = calculate_age(datetime.datetime.strptime(birthday, "%d.%m.%Y"))
             # bdates = datetime.strptime(birthday, "%d.%m.%Y")
+
+            age = calculate_age(datetime.datetime.strptime(birthday, "%d.%m.%Y"))
+            bdates.append(age)
         except (ValueError, TypeError):
             pass
-        else:
-            age = curdate.year - bdates.year - ((curdate.month, curdate.day) < (bdates.month, bdates.day))
-            bdates.append(age)
+        #else:
+         #   age = calculate_age(datetime.datetime.strptime(birthday, "%d.%m.%Y"))
+            #((curdate.month, curdate.day) < (bdates.month, bdates.day))
+          #  bdates.append(age)
     if bdates:
         return float(median(bdates))
 
+def calculate_age(born):
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))

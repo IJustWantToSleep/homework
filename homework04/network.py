@@ -1,15 +1,12 @@
-from api import get_friends
 import time
-import igraph
-#from igraph import Graph, plot
 from typing import Union, List, Tuple
-
+import igraph
 from igraph import Graph, plot
-import numpy as np
+from api import get_friends
 
 
-def get_network(users_ids, as_edgelist=True)-> Union[List[List[int]], List[Tuple[int, int]]]:
-    '''которая для указанного списка пользователей  user_ids строит граф'''
+def get_network(users_ids, as_edgelist=True) -> Union[List[List[int]], List[Tuple[int, int]]]:
+
     user_num = 0
     if as_edgelist:
         edge_list = []
@@ -42,6 +39,7 @@ def get_network(users_ids, as_edgelist=True)-> Union[List[List[int]], List[Tuple
                 user_num += 1
         return matrix
 
+
 def plot_graph(edge_list: list, name_list=[]) -> None:
     if name_list == 0:
         vertices = [i for i in range(len(edge_list))]
@@ -52,16 +50,16 @@ def plot_graph(edge_list: list, name_list=[]) -> None:
     g.simplify(multiple=True, loops=True)
     N = len(vertices)
     visual_style = {
-        "vertex_size": 20,
-        "bbox": (2000, 2000),
-        "margin": 100,
-        "vertex_label_dist": 1.6,
-        "edge_color": "gray",
-        "autocurve": True,
-        "layout": g.layout_fruchterman_reingold(
-            maxiter=100000,
-            area=N ** 2,
-            repulserad=N ** 2)
+         "vertex_size": 20,
+         "bbox": (2000, 2000),
+         "margin": 100,
+         "vertex_label_dist": 1.6,
+         "edge_color": "gray",
+         "autocurve": True,
+         "layout": g.layout_fruchterman_reingold(
+             maxiter=100000,
+             area=N ** 2,
+             repulserad=N ** 2)
     }
 
     clusters = g.community_multilevel()
@@ -69,8 +67,9 @@ def plot_graph(edge_list: list, name_list=[]) -> None:
     g.vs['color'] = pal.get_many(clusters.membership)
     plot(g, **visual_style)
 
-if __name__ == '__main__':
- lst, tpl = get_friends()
- plot_graph(lst, tpl)
 
-#main()
+if __name__ == '__main__':
+    lst, tpl = get_friends()
+    plot_graph(lst, tpl)
+
+

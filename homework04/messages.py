@@ -1,20 +1,14 @@
-from collections import Counter
 import datetime
-
-import plotly
+from collections import Counter
 from typing import List, Tuple
-from api_models import Message
-import config
-import plotly.plotly as py
+import plotly
 import plotly.graph_objs as go
-
-#from datetime import datetime
-
-import random
+import plotly.plotly as py
+import config
+from api_models import Message
 
 Dates = List[datetime.date]
 Frequencies = List[int]
-
 
 plotly.tools.set_credentials_file(
     username=config.PLOTLY_CONFIG['username'],
@@ -41,7 +35,7 @@ def count_dates_from_messages(messages: List[Message]) -> Tuple[Dates, Frequenci
     # ...возвращает объект, поддерживающий итерации
     result = list(zip(*c.most_common()))
     if len(result) == 0:
-        return ([],[])
+        return ([], [])
     return tuple((sorted(result[0]), [c[date] for date in sorted(result[0])]))
 
 
@@ -51,8 +45,6 @@ def plotly_messages_freq(dates: Dates, freq: Frequencies) -> None:
     :param date: список дат
     :param freq: число сообщений в соответствующую дату
     """
-    #data = [plotly.graph_objs.Scatter(x=dates, y=freq)]
-    #plotly.plotly.plot(data)
 
     x = dates
 
@@ -60,6 +52,3 @@ def plotly_messages_freq(dates: Dates, freq: Frequencies) -> None:
     py.iplot(data)
 
     return None
-
-
-

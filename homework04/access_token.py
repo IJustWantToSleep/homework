@@ -1,5 +1,5 @@
-import webbrowser
 import argparse
+import webbrowser
 
 
 def get_access_token(client_id, scope):

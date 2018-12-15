@@ -1,11 +1,11 @@
 import time
-
+from typing import Union, List, Optional
 import requests
-
+from api_models import User, Message
 from config import VK_CONFIG as vk
 
 
-def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
+def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3) -> Optional[requests.models.Response]:
     """ Выполнить GET-запрос
 
     :param url: адрес, на который необходимо выполнить запрос
@@ -27,12 +27,12 @@ def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
             time.sleep(delay)
 
 
-def get_friends(user_id, fields):
+def get_friends(user_id: int, fields="") -> Union[List[User], List[int]]:
     """ Вернуть данных о друзьях пользователя
+       :param user_id: идентификатор пользователя, список друзей которого нужно получить
+       :param fields: список полей, которые нужно получить для каждого пользователя
+       """
 
-    :param user_id: идентификатор пользователя, список друзей которого нужно получить
-    :param fields: список полей, которые нужно получить для каждого пользователя
-    """
     assert isinstance(user_id, int), "user_id must be positive integer"
     assert isinstance(fields, str), "fields must be string"
     assert user_id > 0, "user_id must be positive integer"
@@ -50,11 +50,10 @@ def get_friends(user_id, fields):
     fail = json_doc.get('error')
     if fail:
         raise Exception(json_doc['error']['error_msg'])
-    # return json_doc['response']['items']
     return response.json()
 
 
-def messages_get_history(user_id, offset=0, count=200):
+def messages_get_history(user_id, offset=0, count=200) -> list:
     """ Получить историю переписки с указанным  пользователем
 
     :param user_id: идентификатор пользователя, с которым нужно получить историю переписки

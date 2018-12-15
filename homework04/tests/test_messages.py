@@ -1,9 +1,9 @@
-import unittest
 import datetime as dt
 import random
+import unittest
 
-from messages import count_dates_from_messages, plotly_messages_freq
 from api_models import Message
+from messages import count_dates_from_messages, plotly_messages_freq
 
 
 class TestMessages(unittest.TestCase):
@@ -32,8 +32,6 @@ class TestMessages(unittest.TestCase):
             messages.append(Message(**{**message, **date}))
 
         dates, freq = count_dates_from_messages(messages)
-
-        plotly_messages_freq(dates, freq)
 
         self.assertEqual(sorted(freq), [1, 1, 1, 2, 2, 3])
         self.assertEqual(set(dates), {
@@ -68,9 +66,8 @@ class TestMessages(unittest.TestCase):
         plotly_messages_freq(dates, freq)
 
 
-#TestMessages.mytest_dates_and_frequencies()
+# TestMessages.mytest_dates_and_frequencies()
 loader = unittest.TestLoader()
 suite = loader.loadTestsFromTestCase(TestMessages)
 runner = unittest.TextTestRunner(verbosity=2)
 result = runner.run(suite)
-

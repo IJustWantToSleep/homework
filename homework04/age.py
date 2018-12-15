@@ -17,7 +17,7 @@ def age_predict(user_id: int) -> Optional[float]:
     """
     assert isinstance(user_id, int), "user_id must be positive integer"
     assert user_id > 0, "user_id must be positive integer"
-    curdate = datetime.date.today()
+    #curdate = datetime.date.today()
     friends = [User(**i) for i in get_friends(user_id, 'bdate')]
     # bdates = get_friends(user_id, 'bdate')
     bdates = []
@@ -31,9 +31,19 @@ def age_predict(user_id: int) -> Optional[float]:
             pass
 
     if bdates:
-        return float(median(bdates))
+        bd = float(median(bdates))
+        print("\nНаивный прогноз возраста по возрасту друзей: ")
+        print(bd)
+
+        return bd
+
 
 
 def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+if __name__ == '__main__':
+    age_predict(948354)
+
+main()

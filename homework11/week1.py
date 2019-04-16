@@ -182,3 +182,4 @@ cursor.execute("""
     GROUP BY rollup(Churn)
 """)
 print(tabulate(fetch_all(cursor), "keys", "psql"))
+

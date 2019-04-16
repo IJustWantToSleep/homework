@@ -1,5 +1,5 @@
-import psycopg2
 import csv
+import psycopg2
 
 conn = psycopg2.connect("host=localhost port=5433 dbname=odscourse user=postgres password=secret")
 cursor = conn.cursor()
